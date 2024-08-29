@@ -14,7 +14,7 @@ const cityBounds: [LatLngTuple, LatLngTuple] = [
 
 export function CityMap() {
     return (
-        <MapContainer bounds={cityBounds} style={{ height: "100%", width: "100%" }} zoom={12} center={[47.5215, 7.8700]}>
+        <MapContainer bounds={cityBounds} style={{ height: "100%", width: "100%", zIndex: 0 }} zoom={12} center={[47.5215, 7.8700]}>
             <TileLayer
                 url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
             />
