@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { createRoot } from 'react-dom/client';
 import { GeoJSON } from "react-leaflet";
 import { AreaPopup } from "./areaPopup";
+import area from '@turf/area';
 
 // Define a type for your GeoJSON data
 interface GeoJsonFeature extends Feature<Polygon> {
@@ -60,6 +61,8 @@ export function Ortschaften() {
         const name = feature.properties?.name || "Unknown";
         const population = await getPopulation(name);
 
+        const areaSize = area(feature);
+
         const color = name === home || territory.includes(name) ? "blue" : getColor(population);
 
         layer.setStyle({ color, fillOpacity: 0.4, weight: 2 });
@@ -72,6 +75,7 @@ export function Ortschaften() {
             <AreaPopup
                 name={name}
                 population={population}
+                area={areaSize}
                 baseValue={baseValue}
                 calculateIncome={calculateIncome}
                 onClaim={claim}

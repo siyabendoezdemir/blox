@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 export type Player = {
   home: string;
   territory: string[];
-  flag?: string;
+  wealth: number;
 }
 
 export type MapData = {

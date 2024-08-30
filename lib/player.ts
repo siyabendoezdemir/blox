@@ -3,7 +3,7 @@ import { Player } from "./utils";
 let player: Player = {
   home: "Brislach",
   territory: ["Zwingen", "Dittingen"],
-  flag: "",
+  wealth: 25000000000,
 };
 
 export function getPlayer(): Player {
@@ -69,4 +69,8 @@ export async function getPlayerFlag() {
   } catch (error) {
     console.error("Error fetching flag:", error);
   }
+}
+
+export function deductPlayerMoney(amount: number){
+    player.wealth -= amount;
 }
