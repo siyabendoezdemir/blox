@@ -69,3 +69,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+.leaflet-popup-content-wrapper {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.leaflet-popup-content-wrapper .leaflet-popup-content {
+}
+
+.leaflet-popup-tip-container {
+}

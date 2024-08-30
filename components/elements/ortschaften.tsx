@@ -2,7 +2,9 @@ import { addTerritory, getPlayer, setPlayer } from "@/lib/player";
 import { MapData } from "@/lib/utils";
 import { Feature, FeatureCollection, Polygon } from "geojson";
 import { useEffect, useState } from "react";
+import { createRoot } from 'react-dom/client';
 import { GeoJSON } from "react-leaflet";
+import { AreaPopup } from "./areaPopup";
 
 // Define a type for your GeoJSON data
 interface GeoJsonFeature extends Feature<Polygon> {
@@ -48,7 +50,7 @@ export function Ortschaften() {
     }
 
     function getColor(population: number): string {
-        if (population <= 1000) return 'grey';
+        if (population == 0) return 'grey';
         if (population <= 5000) return 'yellow';
         if (population <= 10000) return 'orange';
         return 'red';
@@ -62,17 +64,25 @@ export function Ortschaften() {
 
         layer.setStyle({ color, fillOpacity: 0.4, weight: 2 });
 
-        layer.bindPopup(`
-            <strong>${name}</strong><br>
-            Population: ${population}<br>
-            Base Value (per person): CHF ${baseValue.toLocaleString()}<br>
-            Approximate Income: CHF ${calculateIncome(population).toLocaleString()}<br>
-            <button onclick="claim('${name}')">Claim</button>
-        `);
+        const popupContainer = document.createElement('div');
+        const root = createRoot(popupContainer);
+
+        // Render the React component into the container div
+        root.render(
+            <AreaPopup
+                name={name}
+                population={population}
+                baseValue={baseValue}
+                calculateIncome={calculateIncome}
+                onClaim={claim}
+            />
+        );
+
+        layer.bindPopup(popupContainer);
     };
 
     // Define the claim function globally to be accessible from popup
-    (window as any).claim = (name: string) => {
+    async function claim(name: string) {
         addTerritory(name); // Use addTerritory to add the new territory
         setPlayerState(prevPlayer => {
             const updatedPlayer = { ...prevPlayer, territory: [...prevPlayer.territory, name] };

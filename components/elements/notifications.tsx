@@ -10,7 +10,7 @@ export function Notifications() {
     ];
 
     return (
-        <div className="hidden md:block w-64 bg-gray-800 p-4 overflow-auto">
+        <div className="hidden md:block w-64 bg-gray-800 p-4">
             <h2 className="text-xl font-bold mb-4">Notifications</h2>
             <ScrollArea className="h-full">
                 <ul className="space-y-2">
