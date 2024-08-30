@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client';
 import { GeoJSON } from "react-leaflet";
 import { AreaPopup } from "./areaPopup";
 import area from '@turf/area';
+import { getPopulation } from "@/lib/territory";
 
 // Define a type for your GeoJSON data
 interface GeoJsonFeature extends Feature<Polygon> {
@@ -39,22 +40,11 @@ export function Ortschaften() {
         return baseValue * population;
     }
 
-    async function getPopulation(name: string) {
-        try {
-            const response = await fetch(`https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/geonames-all-cities-with-a-population-500/records?where=name%3D%22${name}%22&limit=1&refine=country%3A%22Switzerland%22`);
-            const data = await response.json();
-            return data.results?.[0]?.population || 0; // Return 0 if population is unknown
-        } catch (error) {
-            console.error(`Failed to fetch population for ${name}:`, error);
-            return 0; // Return 0 on error
-        }
-    }
-
     function getColor(population: number): string {
-        if (population == 0) return 'grey';
-        if (population <= 5000) return 'yellow';
-        if (population <= 10000) return 'orange';
-        return 'red';
+        if (population <= 1000) return '#D3D3D3	';
+        if (population <= 5000) return '#A9A9A9	';
+        if (population <= 10000) return '#808080	';
+        return '#71797E';
     }
 
     const onEachFeature = async (feature: GeoJsonFeature, layer: any) => {

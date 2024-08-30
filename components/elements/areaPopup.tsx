@@ -22,7 +22,7 @@ export function AreaPopup({ owner, name, area, population, baseValue, calculateI
     const [flag, setFlag] = useState("");
     const [player, setPlayerState] = useState(() => getPlayer()); // Manage player state
 
-    const { territory } = player;
+    const { territory, home } = player;
 
     useEffect(() => {
         async function getFlag() {
@@ -110,7 +110,7 @@ export function AreaPopup({ owner, name, area, population, baseValue, calculateI
                         <Swords className="mr-2 h-4 w-4" />
                         Start War
                     </Button>
-                ) : territory.includes(name) ? (
+                ) : territory.includes(name) || home === name ? (
                     <Button
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                     >
@@ -120,9 +120,9 @@ export function AreaPopup({ owner, name, area, population, baseValue, calculateI
                     <Button
                         className={`w-full bg-emerald-600 hover:bg-emerald-700 text-white`}
                         onClick={() => onClaim(name)}
-                        disabled={(player.wealth -= cost) < 0 ? true : false}
+                        disabled={(player.wealth - cost) < 0 ? true : false}
                     >
-                        {formattedCost} CHF
+                        {formattedCost}
                     </Button>
                 )}
             </CardFooter>

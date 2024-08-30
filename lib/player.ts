@@ -1,3 +1,4 @@
+import { getPopulation } from "./territory";
 import { Player } from "./utils";
 
 let player: Player = {
@@ -5,6 +6,8 @@ let player: Player = {
   territory: ["Zwingen", "Dittingen"],
   wealth: 25000000000,
 };
+
+let populations: { [key: string]: number } = {};
 
 export function getPlayer(): Player {
   return player;
@@ -73,4 +76,24 @@ export async function getPlayerFlag() {
 
 export function deductPlayerMoney(amount: number){
     player.wealth -= amount;
+}
+
+async function fetchAndStorePopulations() {
+  const areas = [player.home, ...player.territory];
+  for (const area of areas) {
+    populations[area] = await getPopulation(area);
+  }
+}
+
+export function getTotalPopulation(): number {
+  fetchAndStorePopulations();
+  let totalPopulation = populations[player.home] || 0;
+
+  for (const territory of player.territory) {
+    totalPopulation += populations[territory] || 0;
+  }
+
+  console.log(totalPopulation);
+
+  return totalPopulation;
 }
