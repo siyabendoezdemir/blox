@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
 import { Ortschaften } from "../elements/ortschaften";
 import { BadgeOverlay } from "../elements/wealth-badge";
+import { MapData } from "@/lib/utils";
 
 // Coordinates for Basel-Stadt and Basel-Land (approximate bounding box)
 const cityBounds: [LatLngTuple, LatLngTuple] = [

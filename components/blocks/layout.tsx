@@ -1,20 +1,16 @@
 "use client"
-import { Children, useState } from 'react'
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { MapPin, Users, Swords, Landmark, Crown, Coins, Globe, Clock, Menu } from "lucide-react"
+import { Users, Swords, Landmark, Crown, Coins, Globe, Clock, Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { CityMap } from './map'
 import { Notifications } from '../elements/notifications'
 import { PlayerStats } from '../elements/player-stats'
+import { Player } from '@/lib/utils'
+import { getPlayer } from '@/lib/player'
 
 export function Layout() {
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
-
     return (
         <div className="flex flex-col h-screen bg-gray-900 text-gray-100">
             {/* Top Bar */}
@@ -31,7 +27,7 @@ export function Layout() {
                         </SheetContent>
                     </Sheet>
                     <Crown className="h-6 w-6 text-yellow-400" />
-                    <span className="font-bold">World Domination</span>
+                    <span className="font-bold">Blox</span>
                 </div>
                 <div className="flex items-center space-x-4">
                     <TooltipProvider>

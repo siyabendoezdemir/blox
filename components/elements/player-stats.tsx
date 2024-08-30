@@ -1,13 +1,24 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Progress } from "../ui/progress"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
 import { Button } from "../ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { ScrollArea } from "../ui/scroll-area"
 import { MapPin, Swords } from "lucide-react"
+import { getPlayer, getPlayerFlag } from "@/lib/player"
+import Image from "next/image"
 
 export function PlayerStats() {
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [flag, setFlag] = useState("");
+
+    useEffect(() => {
+        async function getFlag(){
+            setFlag(await getPlayerFlag());
+        }
+
+        getFlag();
+    }, []);
 
     return (
         <div className="h-full p-4 flex flex-col">
@@ -37,11 +48,13 @@ export function PlayerStats() {
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                    <Button className="w-full h-20 p-0 overflow-hidden mt-auto" variant="ghost">
-                        <img
-                            src="/placeholder.svg?height=80&width=224"
+                    <Button className="w-full h-96 p-0 overflow-hidden mt-auto hover:opacity-80 hover:bg-transparent transition-opacity" variant="ghost">
+                        <Image
+                            src={flag}
                             alt="Nation Flag"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
+                            width={128}
+                            height={128}
                         />
                     </Button>
                 </DialogTrigger>

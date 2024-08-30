@@ -1,3 +1,5 @@
+import { addTerritory, getPlayer, setPlayer } from "@/lib/player";
+import { MapData } from "@/lib/utils";
 import { Feature, FeatureCollection, Polygon } from "geojson";
 import { useEffect, useState } from "react";
 import { GeoJSON } from "react-leaflet";
@@ -15,6 +17,9 @@ interface GeoJsonFeature extends Feature<Polygon> {
 export function Ortschaften() {
     const [geoJsonData, setGeoJsonData] = useState<FeatureCollection | null>(null);
     const [baseValue, setBaseValue] = useState<number>(17329);
+    const [player, setPlayerState] = useState(() => getPlayer()); // Manage player state
+
+    const { home, territory } = player;
 
     useEffect(() => {
         const fetchGeoJson = async () => {
@@ -32,10 +37,14 @@ export function Ortschaften() {
     }
 
     async function getPopulation(name: string) {
-        const response = await fetch(`https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/geonames-all-cities-with-a-population-500/records?where=name%3D%22${name}%22&limit=1&refine=country%3A%22Switzerland%22`);
-        const data = await response.json();
-        const population = data.results?.[0]?.population;
-        return population ? population : 0; // Return 0 if population is unknown
+        try {
+            const response = await fetch(`https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/geonames-all-cities-with-a-population-500/records?where=name%3D%22${name}%22&limit=1&refine=country%3A%22Switzerland%22`);
+            const data = await response.json();
+            return data.results?.[0]?.population || 0; // Return 0 if population is unknown
+        } catch (error) {
+            console.error(`Failed to fetch population for ${name}:`, error);
+            return 0; // Return 0 on error
+        }
     }
 
     function getColor(population: number): string {
@@ -45,30 +54,34 @@ export function Ortschaften() {
         return 'red';
     }
 
-    const onEachFeature = (feature: GeoJsonFeature, layer: any) => {
+    const onEachFeature = async (feature: GeoJsonFeature, layer: any) => {
         const name = feature.properties?.name || "Unknown";
+        const population = await getPopulation(name);
 
-        getPopulation(name).then(population => {
-            layer.setStyle({ color: getColor(population), fillOpacity: 0.4, weight: 2 });
-            layer.bindPopup(`
-                <strong>${name}</strong><br>
-                Population: ${population}<br>
-                Base Value (per person): CHF ${baseValue.toLocaleString()}<br>
-                Approximate Income: CHF ${calculateIncome(population).toLocaleString()}
-            `);
-        }).catch(error => {
-            console.error(`Failed to fetch population for ${name}:`, error);
-            layer.setStyle({ color: 'grey', fillOpacity: 0.4, weight: 2 });
-            layer.bindPopup(`
-                <strong>${name}</strong><br>
-                Population: Unknown<br>
-                Base Value (per person): CHF ${baseValue.toLocaleString()}<br>
-                Approximate Income: Unknown
-            `);
+        const color = name === home || territory.includes(name) ? "blue" : getColor(population);
+
+        layer.setStyle({ color, fillOpacity: 0.4, weight: 2 });
+
+        layer.bindPopup(`
+            <strong>${name}</strong><br>
+            Population: ${population}<br>
+            Base Value (per person): CHF ${baseValue.toLocaleString()}<br>
+            Approximate Income: CHF ${calculateIncome(population).toLocaleString()}<br>
+            <button onclick="claim('${name}')">Claim</button>
+        `);
+    };
+
+    // Define the claim function globally to be accessible from popup
+    (window as any).claim = (name: string) => {
+        addTerritory(name); // Use addTerritory to add the new territory
+        setPlayerState(prevPlayer => {
+            const updatedPlayer = { ...prevPlayer, territory: [...prevPlayer.territory, name] };
+            setPlayer(updatedPlayer); // Update the global player state
+            return updatedPlayer;
         });
     };
 
     return geoJsonData ? (
-        <GeoJSON data={geoJsonData} style={{ color: "grey", fillOpacity: 0.4, weight: 2 }} onEachFeature={onEachFeature} />
+        <GeoJSON key={JSON.stringify(player.territory)} data={geoJsonData} style={{ color: "grey", fillOpacity: 0.4, weight: 2 }} onEachFeature={onEachFeature} />
     ) : null;
 }
